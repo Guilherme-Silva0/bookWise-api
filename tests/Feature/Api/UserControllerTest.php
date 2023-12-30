@@ -114,4 +114,18 @@ class UserControllerTest extends TestCase
 
         $response->assertJson(fn (AssertableJson $json) => $json->where('message', 'Unauthenticated.')->etc());
     }
+
+    public function test_get_user_endpoint_invalid_token(): void
+    {
+        $response = $this->getJson('/api/user?lang=pt_BR', [
+            'Authorization' => 'Bearer invalid-token'
+        ]);
+
+        $response->assertStatus(401);
+
+        $response->assertJson(fn (AssertableJson $json) => $json->where('message', 'Unauthenticated.')->etc());
+
+        $response->assertJsonMissing(['id', 'first_name', 'last_name', 'email', 'profile_image', 'profile_info', 'email_verified_at', 'user_type', 'status', 'created_at', 'updated_at']);
+
+    }
 }
