@@ -23,25 +23,10 @@ class UserControllerTest extends TestCase
             'password' => 'password',
             'password_confirmation' => 'password',
         ]);
-
-        $response->assertStatus(201);
         
-        $response->assertJson(function (AssertableJson $json) use ($user) {
-            $json->hasAll([
-                'first_name',
-                'last_name',
-                'email',
-                'id',
-                'updated_at',
-                'created_at',
-            ]);
-
-            $json->whereAll([
-                'first_name' => $user->first_name,
-                'last_name' => $user->last_name,
-                'email' => $user->email,
-            ])->etc();
-        });
+        $response->assertStatus(201);
+        $response->assertJsonStructure(['token']);
+        $response->assertJson(fn (AssertableJson $json) => $json->whereType('token', 'string')->etc());
     }
 
     public function test_validate_user_registration_empty_fields(): void
@@ -93,5 +78,14 @@ class UserControllerTest extends TestCase
                 'errors.password.1' => 'O campo senha de confirmação não confere.',
             ]);
         });
+    }
+
+    public function test_get_user_endpoint_no_token(): void
+    {
+        $response = $this->getJson('/api/user?lang=pt_BR');
+
+        $response->assertStatus(401);
+
+        $response->assertJson(fn (AssertableJson $json) => $json->where('message', 'Unauthenticated.')->etc());
     }
 }
