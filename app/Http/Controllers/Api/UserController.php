@@ -30,4 +30,16 @@ class UserController extends Controller
 
         return response()->json(['token' => $token], Response::HTTP_CREATED);
     }
+
+    public function me(Request $request)
+    {
+        $user = $this->userService->me($request);
+
+        if (!$user) {
+            return response()->json(null, Response::HTTP_NOT_FOUND);
+        }
+
+        return response()->json($user, Response::HTTP_OK);
+        
+    }
 }
