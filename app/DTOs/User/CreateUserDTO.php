@@ -2,7 +2,7 @@
 
 namespace App\DTOs\User;
 
-use Illuminate\Http\Request;
+use App\Http\Requests\Api\UserRegisterRequest;
 use Illuminate\Support\Facades\Hash;
 
 class CreateUserDTO
@@ -15,7 +15,7 @@ class CreateUserDTO
     ) {
     }
 
-    public static function makeFromRequest(Request $request): self
+    public static function makeFromRequest(UserRegisterRequest $request): self
     {
         return new self(
             $request->get('first_name'),
