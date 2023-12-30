@@ -26,6 +26,8 @@ class UserController extends Controller
             return response()->json(null, Response::HTTP_NOT_FOUND);
         }
 
-        return response()->json($user, Response::HTTP_CREATED);
+        $token = $user->createToken('authToken')->plainTextToken;
+
+        return response()->json(['token' => $token], Response::HTTP_CREATED);
     }
 }
