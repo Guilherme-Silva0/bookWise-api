@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\DTOs\User\CreateUserDTO;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Api\UserRegisterRequest;
 use App\Services\UserService;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -15,7 +16,7 @@ class UserController extends Controller
     ) {
     }
 
-    public function store(Request $request)
+    public function store(UserRegisterRequest $request)
     {
         $user = $this->userService->create(
             CreateUserDTO::makeFromRequest($request)
