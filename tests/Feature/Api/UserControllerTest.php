@@ -80,6 +80,32 @@ class UserControllerTest extends TestCase
         });
     }
 
+    public function test_get_user_endpoint_with_token(): void
+    {
+        $user = User::factory()->create();
+
+        $response = $this->getJson('/api/user?lang=pt_BR', [
+            'Authorization' => 'Bearer ' . $user->createToken('authToken')->plainTextToken
+        ]);
+
+        $response->assertStatus(200);
+        $response->assertJson(function (AssertableJson $json) use ($user) {
+            $json->hasAll(['id', 'first_name', 'last_name', 'email', 'profile_image', 'profile_info', 'email_verified_at', 'user_type', 'status', 'created_at', 'updated_at']);
+
+            $json->whereAll([
+                'id' => $user->id,
+                'first_name' => $user->first_name,
+                'last_name' => $user->last_name,
+                'email' => $user->email,
+                'profile_image' => $user->profile_image,
+                'profile_info' => $user->profile_info,
+                'email_verified_at' => $user->email_verified_at,
+                'user_type' => 'normal',
+                'status' => 'active',
+            ]);
+        });
+    }
+
     public function test_get_user_endpoint_no_token(): void
     {
         $response = $this->getJson('/api/user?lang=pt_BR');
