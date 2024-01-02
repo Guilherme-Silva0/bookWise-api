@@ -40,4 +40,13 @@ class UserService
 
         return null;
     }
+
+    public function logout(Request $request): bool
+    {
+        if($request->user()->currentAccessToken()->delete()) {
+            return true;
+        }
+
+        return false;
+    }
 }

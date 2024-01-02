@@ -55,4 +55,13 @@ class UserController extends Controller
 
         return response()->json(['token' => $token], Response::HTTP_OK);
     }
+
+    public function logout(Request $request)
+    {
+        if($this->userService->logout($request)) {
+            return response()->json(null, Response::HTTP_NO_CONTENT);
+        }
+
+        return response()->json(null, Response::HTTP_NOT_FOUND);
+    }
 }
