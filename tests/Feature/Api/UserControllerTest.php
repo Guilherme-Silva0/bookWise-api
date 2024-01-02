@@ -144,4 +144,20 @@ class UserControllerTest extends TestCase
         $response->assertJsonStructure(['token']);
         $response->assertJson(fn (AssertableJson $json) => $json->whereType('token', 'string')->etc());
     }
+
+    public function test_login_user_endpoint_invalid_credentials(): void
+    {
+        $user = User::factory()->create();
+
+        $response = $this->postJson('/api/user/login?lang=pt_BR', [
+            'email' => $user->email,
+            'password' => 'invalid-password',
+        ]);
+
+        $response->assertStatus(401);
+
+        $response->assertJson(fn (AssertableJson $json) => $json->where('message', 'Credenciais inválidas.'));
+        
+        $response->assertJsonMissing(['id', 'first_name', 'last_name', 'email', 'profile_image', 'profile_info', 'email_verified_at', 'user_type', 'status', 'created_at', 'updated_at']);
+    }
 }
