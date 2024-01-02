@@ -174,4 +174,15 @@ class UserControllerTest extends TestCase
 
         $response->assertStatus(204);
     }
+
+    public function test_logout_user_endpoint_invalid_token(): void
+    {
+        $response = $this->postJson('/api/user/logout?lang=pt_BR', [], [
+            'Authorization' => 'Bearer invalid-token'
+        ]);
+
+        $response->assertStatus(401);
+
+        $response->assertJson(fn (AssertableJson $json) => $json->where('message', 'Unauthenticated.')->etc());
+    }
 }
