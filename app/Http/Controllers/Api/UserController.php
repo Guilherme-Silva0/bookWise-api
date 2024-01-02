@@ -42,4 +42,17 @@ class UserController extends Controller
         return response()->json($user, Response::HTTP_OK);
         
     }
+
+    public function login(Request $request)
+    {
+        $user = $this->userService->login($request);
+
+        if (!$user) {
+            return response()->json(['message' => __('auth.failed')], Response::HTTP_UNAUTHORIZED);
+        }
+
+        $token = $user->createToken('authToken')->plainTextToken;
+
+        return response()->json(['token' => $token], Response::HTTP_OK);
+    }
 }

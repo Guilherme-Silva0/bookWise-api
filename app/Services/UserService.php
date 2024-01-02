@@ -5,6 +5,7 @@ namespace App\Services;
 use App\DTOs\User\CreateUserDTO;
 use App\Repositories\Contracts\UserRepositoryInterface;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class UserService
 {
@@ -27,5 +28,16 @@ class UserService
         }
 
         return $user;
+    }
+
+    public function login(Request $request): object | null
+    {
+        $credentials = $request->only('email', 'password');
+
+        if (Auth::attempt($credentials)) {
+            return $request->user();
+        }
+
+        return null;
     }
 }
