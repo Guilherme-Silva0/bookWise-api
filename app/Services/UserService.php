@@ -3,6 +3,8 @@
 namespace App\Services;
 
 use App\DTOs\User\CreateUserDTO;
+use App\DTOs\User\UpdateUserDTO;
+use App\Http\Requests\Api\UserUpdateRequest;
 use App\Repositories\Contracts\UserRepositoryInterface;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -48,5 +50,20 @@ class UserService
         }
 
         return false;
+    }
+
+    public function update(UpdateUserDTO $dto, string $id): object | null
+    {
+        // Remove null values
+        $filteredData = collect($dto->toArray())
+            ->filter(function ($value) {
+                return $value !== null;
+            })->toArray();
+
+        if (empty($filteredData)) {
+            return null;
+        }
+
+        return $this->userRepository->update($filteredData, $id);
     }
 }

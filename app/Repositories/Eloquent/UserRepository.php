@@ -23,4 +23,21 @@ class UserRepository implements UserRepositoryInterface
 
         return (object) $user;
     }
+
+    public function update(array $data, string $id): object | null
+    {
+        $user = $this->model->find($id);
+
+        if (!$user) {
+            return null;
+        }
+
+        $user->update($data);
+
+        if (!$user) {
+            return null;
+        }
+
+        return (object) $user;
+    }
 }
