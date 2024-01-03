@@ -223,4 +223,25 @@ class UserControllerTest extends TestCase
         });
     }
 
+    public function test_update_user_endpoint_invalid_token(): void
+    {
+        $user = User::factory()->create();
+
+        $updatedFirstName = 'UpdatedFirstName';
+        $updatedLastName = 'UpdatedLastName';
+        $updatedEmail = 'updated@example.com';
+
+        $response = $this->putJson("/api/user/{$user->id}", [
+            'first_name' => $updatedFirstName,
+            'last_name' => $updatedLastName,
+            'email' => $updatedEmail,
+        ], [
+            'Authorization' => 'Bearer invalid-token',
+        ]);
+
+        $response->assertStatus(401);
+
+        $response->assertJson(fn (AssertableJson $json) => $json->where('message', 'Unauthenticated.')->etc());
+    }
+
 }
