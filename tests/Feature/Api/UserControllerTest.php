@@ -244,4 +244,25 @@ class UserControllerTest extends TestCase
         $response->assertJson(fn (AssertableJson $json) => $json->where('message', 'Unauthenticated.')->etc());
     }
 
+    public function test_update_user_endpoint_invalid_user(): void
+    {
+        $user = User::factory()->create();
+
+        $updatedFirstName = 'UpdatedFirstName';
+        $updatedLastName = 'UpdatedLastName';
+        $updatedEmail = 'updated@example.com';
+
+        $response = $this->putJson("/api/user/0?lang=pt_BR", [
+            'first_name' => $updatedFirstName,
+            'last_name' => $updatedLastName,
+            'email' => $updatedEmail,
+        ], [
+            'Authorization' => 'Bearer ' . $user->createToken('authToken')->plainTextToken,
+        ]);
+
+        $response->assertStatus(403);
+
+        $response->assertJson(fn (AssertableJson $json) => $json->where('message', 'This action is unauthorized.')->etc());
+    }
+
 }
