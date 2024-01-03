@@ -185,4 +185,42 @@ class UserControllerTest extends TestCase
 
         $response->assertJson(fn (AssertableJson $json) => $json->where('message', 'Unauthenticated.')->etc());
     }
+
+    public function test_update_user_endpoint(): void
+    {
+        $user = User::factory()->create();
+
+        $token = $user->createToken('authToken')->plainTextToken;
+
+        $updatedFirstName = 'UpdatedFirstName';
+        $updatedLastName = 'UpdatedLastName';
+        $updatedEmail = 'updated@example.com';
+
+        $response = $this->putJson("/api/user/{$user->id}", [
+            'first_name' => $updatedFirstName,
+            'last_name' => $updatedLastName,
+            'email' => $updatedEmail,
+        ], [
+            'Authorization' => 'Bearer ' . $token,
+        ]);
+
+        $response->assertStatus(200);
+
+        $response->assertJson(function (AssertableJson $json) use ($updatedFirstName, $updatedLastName, $updatedEmail, $user) {
+            $json->hasAll(['id', 'first_name', 'last_name', 'email', 'profile_image', 'profile_info', 'email_verified_at', 'user_type', 'status', 'created_at', 'updated_at']);
+
+            $json->whereAll([
+                'id' => $user->id,
+                'first_name' => $updatedFirstName,
+                'last_name' => $updatedLastName,
+                'email' => $updatedEmail,
+                'profile_image' => $user->profile_image,
+                'profile_info' => $user->profile_info,
+                'email_verified_at' => $user->email_verified_at,
+                'user_type' => 'normal',
+                'status' => 'active',
+            ]);
+        });
+    }
+
 }
