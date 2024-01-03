@@ -9,5 +9,6 @@ Route::post('user/login', [UserController::class, 'login'])->name('user.login');
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/user', [UserController::class, 'me'])->name('user.me');
+    Route::put('/user/{id}', [UserController::class, 'update'])->name('user.update');
     Route::post('user/logout', [UserController::class, 'logout'])->name('user.logout');
 });
