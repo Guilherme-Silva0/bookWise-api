@@ -265,4 +265,40 @@ class UserControllerTest extends TestCase
         $response->assertJson(fn (AssertableJson $json) => $json->where('message', 'This action is unauthorized.')->etc());
     }
 
+    public function test_update_user_endpoint_invalid_data(): void
+    {
+        $user = User::factory()->create();
+
+        $response = $this->putJson("/api/user/{$user->id}?lang=pt_BR", [
+            'first_name' => '',
+            'last_name' => '',
+            'email' => '',
+            'profile_image' => 5,
+            'profile_info' => '',
+            'status' => 'invalid-status',
+            'user_type' => 'invalid-user-type',
+        ], [
+            'Authorization' => 'Bearer ' . $user->createToken('authToken')->plainTextToken,
+        ]);
+
+        $response->assertStatus(422);
+
+        $response->assertJson(function (AssertableJson $json) {
+            $json->whereAll([
+                'message' => 'O campo primeiro nome deve ser uma string. (e mais 10 erros)',
+                'errors.first_name.0' => 'O campo primeiro nome deve ser uma string.',
+                'errors.first_name.1' => 'O campo primeiro nome deve ter pelo menos 2 caracteres.',
+                'errors.last_name.0' => 'O campo sobrenome deve ser uma string.',
+                'errors.last_name.1' => 'O campo sobrenome deve ter pelo menos 2 caracteres.',
+                'errors.email.0' => 'O campo email deve ser uma string.',
+                'errors.email.1' => 'O campo email deve ser um endereço de e-mail válido.',
+                'errors.profile_image.0' => 'O campo profile image deve ser uma string.',
+                'errors.profile_info.0' => 'O campo profile info deve ser uma string.',
+                'errors.profile_info.1' => 'O campo profile info deve ter pelo menos 2 caracteres.',
+                'errors.status.0' => 'O campo status selecionado é inválido.',
+                'errors.user_type.0' => 'O campo user type selecionado é inválido.',
+            ]);
+        });
+    }
+
 }
