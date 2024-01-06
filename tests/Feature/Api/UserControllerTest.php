@@ -2,10 +2,12 @@
 
 namespace Tests\Feature\Api;
 
+use App\Jobs\SendEmailVerification;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Queue;
 use Illuminate\Testing\Fluent\AssertableJson;
 use Tests\TestCase;
 
@@ -28,6 +30,28 @@ class UserControllerTest extends TestCase
         $response->assertStatus(201);
         $response->assertJsonStructure(['token']);
         $response->assertJson(fn (AssertableJson $json) => $json->whereType('token', 'string')->etc());
+    }
+
+    public function test_user_registration_sends_verification_email()
+    {
+        Queue::fake();
+
+        $userData = [
+            'first_name' => 'John',
+            'last_name' => 'Doe',
+            'email' => 'john@example.com',
+            'password' => 'password',
+            'password_confirmation' => 'password',
+        ];
+
+        $response = $this->postJson('/api/user/register?lang=pt_BR', $userData);
+
+        $response->assertStatus(201);
+
+        Queue::assertPushed(SendEmailVerification::class, function ($job) use ($userData) {
+            $user = User::where('email', $userData['email'])->first();
+            return $job->user->id === $user->id;
+        });
     }
 
     public function test_validate_user_registration_empty_fields(): void
