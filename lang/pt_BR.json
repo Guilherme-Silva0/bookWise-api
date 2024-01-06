@@ -35,6 +35,7 @@
   "E-Mail Address": "E-mail",
   "Email Address": "Endereço de e-mail",
   "Email Password Reset Link": "Enviar link para redefinir senha por e-mail",
+  "Email Verification": "Verificação de e-mail",
   "Enable": "Habilitar",
   "Ensure your account is using a long, random password to stay secure.": "Certifique-se de que sua conta esteja usando uma senha longa e aleatória para permanecer segura.",
   "Forgot Your Password?": "Esqueceu sua senha?",
@@ -130,5 +131,6 @@
   "click here to request another": "clique aqui para solicitar outro",
   "of": "de",
   "results": "resultados",
-  "to": "até"
+  "to": "até",
+  "Thanks": "Obrigado"
 }
