@@ -4,7 +4,7 @@ namespace App\Services;
 
 use App\DTOs\User\CreateUserDTO;
 use App\DTOs\User\UpdateUserDTO;
-use App\Http\Requests\Api\UserUpdateRequest;
+use App\Jobs\SendEmailVerification;
 use App\Repositories\Contracts\UserRepositoryInterface;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -18,7 +18,15 @@ class UserService
 
     public function create(CreateUserDTO $dto): object | null
     {
-        return $this->userRepository->create($dto);
+        $user = $this->userRepository->create($dto);
+
+        if (!$user) {
+            return null;
+        }
+
+        dispatch(new SendEmailVerification($user, app()->getLocale()));
+
+        return $user;
     }
 
     public function me(Request $request): object | null
