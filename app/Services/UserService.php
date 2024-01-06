@@ -29,6 +29,20 @@ class UserService
         return $user;
     }
 
+    public function confirmEmail(string $confirmationToken, string $userId): bool
+    {
+        $expectedConfirmationToken = hash_hmac('sha256', $userId, env('SECRET_KEY'));
+
+        if ($confirmationToken === $expectedConfirmationToken) {
+            if($this->userRepository->update(['email_verified_at' => now()], $userId)) {
+                return true;
+            }
+            return false;
+        }
+
+        return false;
+    }
+
     public function me(Request $request): object | null
     {
         $user = $request->user();
