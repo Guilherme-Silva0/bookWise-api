@@ -54,6 +54,29 @@ class UserControllerTest extends TestCase
         });
     }
 
+    public function test_confirmation_email_endpoint_with_valid_token(): void
+    {
+        $user = User::factory()->create();
+
+        $token = $user->createToken('authToken')->plainTextToken;
+
+        $confirmationToken = hash_hmac('sha256', $user->id, env('SECRET_KEY'));
+
+        $this->assertFalse($user->hasVerifiedEmail());
+
+        $response = $this->putJson('/api/user/confirm_email?lang=pt_BR', [
+            'confirmation_token' => $confirmationToken,
+        ], [
+            'Authorization' => 'Bearer ' . $token,
+        ]);
+
+        $user->refresh();
+
+        $response->assertStatus(204);
+
+        $this->assertTrue($user->hasVerifiedEmail());
+    }
+
     public function test_validate_user_registration_empty_fields(): void
     {
         $response = $this->postJson('/api/user/register?lang=pt_BR', [
