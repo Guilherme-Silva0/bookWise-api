@@ -123,6 +123,28 @@ class UserControllerTest extends TestCase
         $response->assertJson(fn (AssertableJson $json) => $json->where('message', 'O campo confirmation token é obrigatório.')->etc());
     }
 
+    public function test_confirmation_email_endpoint_with_empty_authorization_header(): void
+    {
+        $user = User::factory()->create();
+
+        $confirmationToken = hash_hmac('sha256', $user->id, env('SECRET_KEY'));
+
+        $this->assertFalse($user->hasVerifiedEmail());
+
+        $response = $this->putJson('/api/user/confirm_email?lang=pt_BR', [
+            'confirmation_token' => $confirmationToken,
+        ]);
+
+        $user->refresh();
+
+        $response->assertStatus(401);
+
+        $response->assertJson(fn (AssertableJson $json) => $json->where('message', 'Unauthenticated.')->etc());
+
+        $this->assertFalse($user->hasVerifiedEmail());
+
+    }
+
     public function test_validate_user_registration_empty_fields(): void
     {
         $response = $this->postJson('/api/user/register?lang=pt_BR', [
