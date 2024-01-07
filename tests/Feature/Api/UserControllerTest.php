@@ -100,6 +100,29 @@ class UserControllerTest extends TestCase
         $this->assertFalse($user->hasVerifiedEmail());
     }
 
+    public function test_confirmation_email_endpoint_with_empty_token_confirmation(): void
+    {
+        $user = User::factory()->create();
+
+        $token = $user->createToken('authToken')->plainTextToken;
+
+        $this->assertFalse($user->hasVerifiedEmail());
+
+        $response = $this->putJson('/api/user/confirm_email?lang=pt_BR', [
+            'confirmation_token' => '',
+        ], [
+            'Authorization' => 'Bearer ' . $token,
+        ]);
+
+        $user->refresh();
+
+        $response->assertStatus(422);
+
+        $this->assertFalse($user->hasVerifiedEmail());
+
+        $response->assertJson(fn (AssertableJson $json) => $json->where('message', 'O campo confirmation token é obrigatório.')->etc());
+    }
+
     public function test_validate_user_registration_empty_fields(): void
     {
         $response = $this->postJson('/api/user/register?lang=pt_BR', [
