@@ -54,7 +54,7 @@ class UserControllerTest extends TestCase
         });
     }
 
-    public function test_confirmation_email_endpoint_with_valid_token(): void
+    public function test_confirmation_email_endpoint_with_valid_token_confirmation(): void
     {
         $user = User::factory()->create();
 
@@ -75,6 +75,29 @@ class UserControllerTest extends TestCase
         $response->assertStatus(204);
 
         $this->assertTrue($user->hasVerifiedEmail());
+    }
+
+    public function test_confirmation_email_endpoint_with_invalid_token_confirmation(): void
+    {
+        $user = User::factory()->create();
+
+        $token = $user->createToken('authToken')->plainTextToken;
+
+        $confirmationToken = 'invalid-token';
+
+        $this->assertFalse($user->hasVerifiedEmail());
+
+        $response = $this->putJson('/api/user/confirm_email?lang=pt_BR', [
+            'confirmation_token' => $confirmationToken,
+        ], [
+            'Authorization' => 'Bearer ' . $token,
+        ]);
+
+        $user->refresh();
+
+        $response->assertStatus(404);
+
+        $this->assertFalse($user->hasVerifiedEmail());
     }
 
     public function test_validate_user_registration_empty_fields(): void
