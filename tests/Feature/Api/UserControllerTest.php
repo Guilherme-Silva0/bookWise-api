@@ -2,11 +2,10 @@
 
 namespace Tests\Feature\Api;
 
+use App\Jobs\SendEmailRestorePassword;
 use App\Jobs\SendEmailVerification;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Queue;
 use Illuminate\Testing\Fluent\AssertableJson;
 use Tests\TestCase;
@@ -413,6 +412,28 @@ class UserControllerTest extends TestCase
                 'errors.status.0' => 'O campo status selecionado é inválido.',
                 'errors.user_type.0' => 'O campo user type selecionado é inválido.',
             ]);
+        });
+    }
+
+    public function test_forgot_password_endpoint(): void
+    {
+        Queue::fake();
+
+        $userData = User::factory()->create();
+
+        $userData->update(['email_verified_at' => now()]);
+
+        $response = $this->postJson('/api/user/forgot_password?lang=pt_BR', [
+            'email' => $userData->email,
+        ]);
+
+        $response->assertStatus(200);
+
+        $response->assertJson(fn (AssertableJson $json) => $json->where('message', 'Um link de redefinição de senha foi enviado para seu e-mail.')->etc());
+
+        Queue::assertPushed(SendEmailRestorePassword::class, function ($job) use ($userData) {
+            $user = User::where('email', $userData['email'])->first();
+            return $job->user->id === $user->id;
         });
     }
 
