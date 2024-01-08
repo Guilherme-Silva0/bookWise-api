@@ -6,6 +6,7 @@ use App\DTOs\User\CreateUserDTO;
 use App\DTOs\User\UpdateUserDTO;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\ConfirmEmailRequest;
+use App\Http\Requests\Api\ForgotPasswordRequest;
 use App\Http\Requests\Api\UserRegisterRequest;
 use App\Http\Requests\Api\UserUpdateRequest;
 use App\Models\User;
@@ -87,5 +88,14 @@ class UserController extends Controller
         }
 
         return response()->json($user, Response::HTTP_OK);
+    }
+
+    public function forgotPassword(ForgotPasswordRequest $request)
+    {
+        if($this->userService->forgotPassword($request->get('email'))) {
+            return response()->json(['message' => __('A password reset link has been sent to your email.')], Response::HTTP_OK);
+        }
+
+        return response()->json(['message' => __('Invalid email, are you sure it is correct and verified?')], Response::HTTP_NOT_FOUND);
     }
 }

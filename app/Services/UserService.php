@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\DTOs\User\CreateUserDTO;
 use App\DTOs\User\UpdateUserDTO;
+use App\Jobs\SendEmailRestorePassword;
 use App\Jobs\SendEmailVerification;
 use App\Repositories\Contracts\UserRepositoryInterface;
 use Illuminate\Http\Request;
@@ -87,5 +88,22 @@ class UserService
         }
 
         return $this->userRepository->update($filteredData, $id);
+    }
+
+    public function forgotPassword(string $email): bool
+    {
+        $user = $this->userRepository->getByEmail($email);
+
+        if(!$user) {
+            return false;
+        }
+
+        if(!$user->hasVerifiedEmail()) {
+            return false;
+        }
+
+        dispatch(new SendEmailRestorePassword($user, app()->getLocale()));
+
+        return true;
     }
 }
