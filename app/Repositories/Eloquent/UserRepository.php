@@ -40,4 +40,9 @@ class UserRepository implements UserRepositoryInterface
 
         return (object) $user;
     }
+
+    public function getByEmail(string $email): ?object
+    {
+        return (object) $this->model->where('email', $email)->first();
+    }
 }
