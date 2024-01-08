@@ -132,5 +132,9 @@
   "of": "de",
   "results": "resultados",
   "to": "até",
-  "Thanks": "Obrigado"
+  "Thanks": "Obrigado",
+  "To confirm your identity, we need you to click the button below so you can reset your password.": "Para confirmar sua identidade, precisamos que clique no botão abaixo para que possa redefinir sua senha.",
+  "If you have not requested to recover your password, please disregard this email.": "Se você não solicitou a redefinição de sua senha, por favor ignore este e-mail.",
+  "Invalid email, are you sure it is correct and verified?": "E-mail invalido, você tem certeza que ele está correto e que está verificado?",
+  "A password reset link has been sent to your email.": "Um link de redefinição de senha foi enviado para seu e-mail."
 }
