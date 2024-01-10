@@ -6,6 +6,7 @@ use App\Jobs\SendEmailRestorePassword;
 use App\Jobs\SendEmailVerification;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Queue;
 use Illuminate\Testing\Fluent\AssertableJson;
 use Tests\TestCase;
@@ -481,5 +482,29 @@ class UserControllerTest extends TestCase
         $response->assertStatus(404);
 
         $response->assertJson(fn (AssertableJson $json) => $json->where('message', 'E-mail invalido, você tem certeza que ele está correto e que está verificado?')->etc());
+    }
+
+    public function test_recover_password_endpoint(): void
+    {
+        $user = User::factory()->create();
+
+        $user->update(['email_verified_at' => now()]);
+
+        $this->assertFalse(Hash::check('newPassword', $user->password));
+
+        $response = $this->postJson('/api/user/'.$user->id.'/recover_password?lang=pt_BR', [
+            'email' => $user->email,
+            'password' => 'newPassword',
+            'password_confirmation' => 'newPassword',
+        ]);
+
+        $user->refresh();
+
+        $response->assertStatus(200);
+
+        $response->assertJson(fn (AssertableJson $json) => $json->where('message', 'Senha alterada com sucesso.')->etc());
+
+        $this->assertTrue(Hash::check('newPassword', $user->password));
+
     }
 }
