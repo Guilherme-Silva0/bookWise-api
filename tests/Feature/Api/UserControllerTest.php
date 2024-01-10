@@ -437,4 +437,15 @@ class UserControllerTest extends TestCase
         });
     }
 
+    public function test_forgot_password_endpoint_invalid_email(): void
+    {
+        $response = $this->postJson('/api/user/forgot_password?lang=pt_BR', [
+            'email' => 'invalid-email',
+        ]);
+
+        $response->assertStatus(422);
+
+        $response->assertJson(fn (AssertableJson $json) => $json->where('message', 'O campo email deve ser um endereço de e-mail válido.')->etc());
+    }
+
 }
