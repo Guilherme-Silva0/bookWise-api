@@ -469,4 +469,17 @@ class UserControllerTest extends TestCase
 
         $response->assertJson(fn (AssertableJson $json) => $json->where('message', 'O campo email selecionado é inválido.')->etc());
     }
+
+    public function test_forgot_password_endpoint_unverified_email(): void
+    {
+        $userData = User::factory()->create();
+
+        $response = $this->postJson('/api/user/forgot_password?lang=pt_BR', [
+            'email' => $userData->email,
+        ]);
+
+        $response->assertStatus(404);
+
+        $response->assertJson(fn (AssertableJson $json) => $json->where('message', 'E-mail invalido, você tem certeza que ele está correto e que está verificado?')->etc());
+    }
 }
