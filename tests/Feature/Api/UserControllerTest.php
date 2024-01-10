@@ -459,4 +459,14 @@ class UserControllerTest extends TestCase
         $response->assertJson(fn (AssertableJson $json) => $json->where('message', 'O campo email é obrigatório.')->etc());
     }
 
+    public function test_forgot_password_endpoint_inexistent_email(): void
+    {
+        $response = $this->postJson('/api/user/forgot_password?lang=pt_BR', [
+            'email' => 'inexistentemail@example.com',
+        ]);
+
+        $response->assertStatus(422);
+
+        $response->assertJson(fn (AssertableJson $json) => $json->where('message', 'O campo email selecionado é inválido.')->etc());
+    }
 }
