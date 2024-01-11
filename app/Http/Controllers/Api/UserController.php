@@ -7,6 +7,7 @@ use App\DTOs\User\UpdateUserDTO;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\ConfirmEmailRequest;
 use App\Http\Requests\Api\ForgotPasswordRequest;
+use App\Http\Requests\Api\ResetPasswordRequest;
 use App\Http\Requests\Api\UserRegisterRequest;
 use App\Http\Requests\Api\UserUpdateRequest;
 use App\Models\User;
@@ -97,5 +98,14 @@ class UserController extends Controller
         }
 
         return response()->json(['message' => __('Invalid email, are you sure it is correct and verified?')], Response::HTTP_NOT_FOUND);
+    }
+
+    public function resetPassword(ResetPasswordRequest $request, string $id)
+    {
+        if($this->userService->resetPassword($request->get('password'), $request->get('token'), $id)) {
+            return response()->json(['message' => __('Password changed successfully.')], Response::HTTP_OK);
+        }
+
+        return response()->json(['message' => __('Invalid data, are you sure it is correct and verified?')], Response::HTTP_UNPROCESSABLE_ENTITY);
     }
 }

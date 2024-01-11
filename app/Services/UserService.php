@@ -9,6 +9,7 @@ use App\Jobs\SendEmailVerification;
 use App\Repositories\Contracts\UserRepositoryInterface;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 
 class UserService
 {
@@ -105,5 +106,26 @@ class UserService
         dispatch(new SendEmailRestorePassword($user, app()->getLocale()));
 
         return true;
+    }
+
+    public function resetPassword(string $password, string $token, string $id): object | bool
+    {
+        $user = $this->userRepository->getById($id);
+
+        if(!$user) {
+            return false;
+        }
+
+        if(!$user->hasVerifiedEmail()) {
+            return false;
+        }
+
+        $expectedToken = hash_hmac('sha256', $user->email, env('SECRET_KEY'));
+
+        if ($token !== $expectedToken) {
+            return false;
+        }
+
+        return (object) $this->userRepository->update(['password' => Hash::make($password)], $id);
     }
 }
