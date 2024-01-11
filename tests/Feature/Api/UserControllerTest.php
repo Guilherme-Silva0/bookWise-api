@@ -553,4 +553,32 @@ class UserControllerTest extends TestCase
             ]);
         });
     }
+
+    public function test_recover_password_endpoint_invalid_data(): void
+    {
+        $user = User::factory()->create();
+
+        $user->update(['email_verified_at' => now()]);
+
+        $this->assertFalse(Hash::check('tt', $user->password));
+
+        $response = $this->postJson('/api/user/'.$user->id.'/reset_password?lang=pt_BR', [
+            'token' => '',
+            'password' => 'tt',
+            'password_confirmation' => 'ee',
+        ]);
+
+        $user->refresh();
+
+        $response->assertStatus(422);
+
+        $this->assertFalse(Hash::check('tt', $user->password));
+
+        $response->assertJson(fn (AssertableJson $json) => $json->whereAll([
+            'message' => 'O campo token é obrigatório. (e mais 2 erros)',
+            'errors.token.0' => 'O campo token é obrigatório.',
+            'errors.password.0' => 'O campo senha deve ter pelo menos 8 caracteres.',
+            'errors.password.1' => 'O campo senha de confirmação não confere.',
+        ]));
+    }
 }
