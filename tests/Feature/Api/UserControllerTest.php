@@ -530,4 +530,27 @@ class UserControllerTest extends TestCase
 
         $this->assertFalse(Hash::check('newPassword', $user->password));
     }
+
+    public function test_recover_password_endpoint_empty_data(): void
+    {
+        $user = User::factory()->create();
+
+        $user->update(['email_verified_at' => now()]);
+
+        $this->assertFalse(Hash::check('newPassword', $user->password));
+
+        $response = $this->postJson('/api/user/'.$user->id.'/reset_password?lang=pt_BR', []);
+
+        $user->refresh();
+
+        $response->assertStatus(422);
+
+        $response->assertJson(function (AssertableJson $json) {
+            $json->whereAll([
+                'message' => 'O campo token é obrigatório. (e mais 1 erro)',
+                'errors.token.0' => 'O campo token é obrigatório.',
+                'errors.password.0' => 'O campo senha é obrigatório.',
+            ]);
+        });
+    }
 }
