@@ -604,4 +604,27 @@ class UserControllerTest extends TestCase
 
         $response->assertJson(fn (AssertableJson $json) => $json->where('message', 'Dados inválidos, tem certeza que eles são corretos e verificados?')->etc());
     }
+
+    public function test_recover_password_endpoint_unverified_email(): void
+    {
+        $user = User::factory()->create();
+
+        $this->assertFalse(Hash::check('newPassword', $user->password));
+
+        $this->assertFalse($user->hasVerifiedEmail());
+
+        $response = $this->postJson('/api/user/'.$user->id.'/reset_password?lang=pt_BR', [
+            'token' => hash_hmac('sha256', $user->email, env('SECRET_KEY')),
+            'password' => 'newPassword',
+            'password_confirmation' => 'newPassword',
+        ]);
+
+        $user->refresh();
+
+        $response->assertStatus(422);
+
+        $this->assertFalse(Hash::check('newPassword', $user->password));
+
+        $response->assertJson(fn (AssertableJson $json) => $json->where('message', 'Dados inválidos, tem certeza que eles são corretos e verificados?')->etc());
+    }
 }
