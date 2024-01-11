@@ -581,4 +581,27 @@ class UserControllerTest extends TestCase
             'errors.password.1' => 'O campo senha de confirmação não confere.',
         ]));
     }
+
+    public function test_recover_password_endpoint_invalid_id(): void
+    {
+        $user = User::factory()->create();
+
+        $user->update(['email_verified_at' => now()]);
+
+        $this->assertFalse(Hash::check('newPassword', $user->password));
+
+        $response = $this->postJson('/api/user/999/reset_password?lang=pt_BR', [
+            'token' => hash_hmac('sha256', $user->email, env('SECRET_KEY')),
+            'password' => 'newPassword',
+            'password_confirmation' => 'newPassword',
+        ]);
+
+        $user->refresh();
+
+        $response->assertStatus(422);
+
+        $this->assertFalse(Hash::check('newPassword', $user->password));
+
+        $response->assertJson(fn (AssertableJson $json) => $json->where('message', 'Dados inválidos, tem certeza que eles são corretos e verificados?')->etc());
+    }
 }
