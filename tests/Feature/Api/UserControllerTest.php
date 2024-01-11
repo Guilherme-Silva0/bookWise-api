@@ -492,8 +492,8 @@ class UserControllerTest extends TestCase
 
         $this->assertFalse(Hash::check('newPassword', $user->password));
 
-        $response = $this->postJson('/api/user/'.$user->id.'/recover_password?lang=pt_BR', [
-            'email' => $user->email,
+        $response = $this->postJson('/api/user/'.$user->id.'/reset_password?lang=pt_BR', [
+            'token' => hash_hmac('sha256', $user->email, env('SECRET_KEY')),
             'password' => 'newPassword',
             'password_confirmation' => 'newPassword',
         ]);
@@ -506,5 +506,28 @@ class UserControllerTest extends TestCase
 
         $this->assertTrue(Hash::check('newPassword', $user->password));
 
+    }
+
+    public function test_recover_password_endpoint_invalid_token(): void
+    {
+        $user = User::factory()->create();
+
+        $user->update(['email_verified_at' => now()]);
+
+        $this->assertFalse(Hash::check('newPassword', $user->password));
+
+        $response = $this->postJson('/api/user/'.$user->id.'/reset_password?lang=pt_BR', [
+            'token' => 'invalidToken',
+            'password' => 'newPassword',
+            'password_confirmation' => 'newPassword',
+        ]);
+
+        $user->refresh();
+
+        $response->assertStatus(422);
+
+        $response->assertJson(fn (AssertableJson $json) => $json->where('message', 'Dados inválidos, tem certeza que eles são corretos e verificados?')->etc());
+
+        $this->assertFalse(Hash::check('newPassword', $user->password));
     }
 }
