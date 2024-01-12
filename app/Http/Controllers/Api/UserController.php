@@ -108,4 +108,19 @@ class UserController extends Controller
 
         return response()->json(['message' => __('Invalid data, are you sure it is correct and verified?')], Response::HTTP_UNPROCESSABLE_ENTITY);
     }
+
+    public function show(string $id)
+    {
+        if (!$id) {
+            return response()->json(null, Response::HTTP_NOT_FOUND);
+        }
+
+        $user = $this->userService->show($id);
+
+        if (!$user) {
+            return response()->json(null, Response::HTTP_NOT_FOUND);
+        }
+
+        return response()->json($user, Response::HTTP_OK);
+    }
 }

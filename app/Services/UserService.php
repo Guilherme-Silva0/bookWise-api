@@ -128,4 +128,15 @@ class UserService
 
         return (object) $this->userRepository->update(['password' => Hash::make($password)], $id);
     }
+
+    public function show(string $id): object | null
+    {
+        $user = $this->userRepository->getById($id);
+
+        if (!$user) {
+            return null;
+        }
+
+        return (object) $user;
+    }
 }
