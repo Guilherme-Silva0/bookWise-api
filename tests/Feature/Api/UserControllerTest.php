@@ -627,4 +627,35 @@ class UserControllerTest extends TestCase
 
         $response->assertJson(fn (AssertableJson $json) => $json->where('message', 'Dados inválidos, tem certeza que eles são corretos e verificados?')->etc());
     }
+
+    public function test_get_user_endpoint_with_token(): void
+    {
+        $user1 = User::factory()->create();
+
+        $user2 = User::factory()->create();
+
+        $token = $user1->createToken('authToken')->plainTextToken;
+
+        $response = $this->getJson('/api/user/'.$user2->id.'?lang=pt_BR', [
+            'Authorization' => 'Bearer ' . $token
+        ]);
+
+        $response->assertStatus(200);
+
+        $response->assertJson(function (AssertableJson $json) use ($user2) {
+            $json->whereAll([
+                'id' => $user2->id,
+                'first_name' => $user2->first_name,
+                'last_name' => $user2->last_name,
+                'email' => $user2->email,
+                'profile_image' => null,
+                'profile_info' => null,
+                'email_verified_at' => null,
+                'user_type' => 'normal',
+                'status' => 'active',
+                'created_at' => $user2->created_at->toJSON(),
+                'updated_at' => $user2->updated_at->toJSON(),
+            ]);
+        });
+    }
 }
