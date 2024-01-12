@@ -196,7 +196,7 @@ class UserControllerTest extends TestCase
         });
     }
 
-    public function test_get_user_endpoint_with_token(): void
+    public function test_get_me_endpoint_with_token(): void
     {
         $user = User::factory()->create();
 
@@ -222,7 +222,7 @@ class UserControllerTest extends TestCase
         });
     }
 
-    public function test_get_user_endpoint_no_token(): void
+    public function test_get_me_endpoint_no_token(): void
     {
         $response = $this->getJson('/api/user?lang=pt_BR');
 
@@ -233,7 +233,7 @@ class UserControllerTest extends TestCase
         $response->assertJsonMissing(['id', 'first_name', 'last_name', 'email', 'profile_image', 'profile_info', 'email_verified_at', 'user_type', 'status', 'created_at', 'updated_at']);
     }
 
-    public function test_get_user_endpoint_invalid_token(): void
+    public function test_get_me_endpoint_invalid_token(): void
     {
         $response = $this->getJson('/api/user?lang=pt_BR', [
             'Authorization' => 'Bearer invalid-token'
