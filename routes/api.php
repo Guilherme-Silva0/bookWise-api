@@ -11,6 +11,7 @@ Route::post('user/{id}/reset_password', [UserController::class, 'resetPassword']
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/user', [UserController::class, 'me'])->name('user.me');
+    Route::get('/user/{id}', [UserController::class, 'show'])->name('user.show');
     Route::post('user/logout', [UserController::class, 'logout'])->name('user.logout');
     Route::put('user/confirm_email', [UserController::class, 'confirmEmail'])->name('user.confirm_email');
     Route::put('/user/{id}', [UserController::class, 'update'])->name('user.update');
