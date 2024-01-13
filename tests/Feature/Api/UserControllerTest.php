@@ -658,4 +658,19 @@ class UserControllerTest extends TestCase
             ]);
         });
     }
+
+    public function test_get_user_endpoint_invalid_token(): void
+    {
+        $user = User::factory()->create();
+
+        $response = $this->getJson('/api/user/'.$user->id.'?lang=pt_BR', [
+            'Authorization' => 'Bearer invalid-token'
+        ]);
+
+        $response->assertStatus(401);
+
+        $response->assertJson(fn (AssertableJson $json) => $json->where('message', 'Unauthenticated.'));
+
+        $response->assertJsonMissing(['id', 'first_name', 'last_name', 'email', 'profile_image', 'profile_info', 'email_verified_at', 'user_type', 'status', 'created_at', 'updated_at']);
+    }
 }
