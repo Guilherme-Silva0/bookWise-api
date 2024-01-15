@@ -673,4 +673,17 @@ class UserControllerTest extends TestCase
 
         $response->assertJsonMissing(['id', 'first_name', 'last_name', 'email', 'profile_image', 'profile_info', 'email_verified_at', 'user_type', 'status', 'created_at', 'updated_at']);
     }
+
+    public function test_get_user_endpoint_invalid_id(): void
+    {
+        $user = User::factory()->create();
+
+        $response = $this->getJson('/api/user/999?lang=pt_BR', [
+            'Authorization' => 'Bearer ' . $user->createToken('authToken')->plainTextToken
+        ]);
+
+        $response->assertStatus(404);
+
+        $response->assertJsonMissing(['id', 'first_name', 'last_name', 'email', 'profile_image', 'profile_info', 'email_verified_at', 'user_type', 'status', 'created_at', 'updated_at']);
+    }
 }
