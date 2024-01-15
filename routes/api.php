@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\UserController;
+use App\Http\Controllers\BookController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -8,6 +9,8 @@ Route::post('user/register', [UserController::class, 'store'])->name('user.store
 Route::post('user/login', [UserController::class, 'login'])->name('user.login');
 Route::post('user/forgot_password', [UserController::class, 'forgotPassword'])->name('user.forgot_password');
 Route::post('user/{id}/reset_password', [UserController::class, 'resetPassword'])->name('user.reset_password');
+
+Route::get('/books', [BookController::class, 'index'])->name('book.index');
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/user', [UserController::class, 'me'])->name('user.me');
