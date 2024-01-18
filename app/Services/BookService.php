@@ -15,4 +15,13 @@ class BookService
     {
         return $this->bookRepository->getBooks();
     }
+
+    public function getBookById(string $id): ?object
+    {
+        if(!$id){
+            return null;
+        }
+
+        return $this->bookRepository->getBookById($id);
+    }
 }
