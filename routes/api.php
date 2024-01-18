@@ -11,6 +11,7 @@ Route::post('user/forgot_password', [UserController::class, 'forgotPassword'])->
 Route::post('user/{id}/reset_password', [UserController::class, 'resetPassword'])->name('user.reset_password');
 
 Route::get('/books', [BookController::class, 'index'])->name('book.index');
+Route::get('/books/{id}', [BookController::class, 'show'])->name('books.show');
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/user', [UserController::class, 'me'])->name('user.me');
