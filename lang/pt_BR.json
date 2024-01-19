@@ -138,5 +138,7 @@
   "Invalid email, are you sure it is correct and verified?": "E-mail invalido, você tem certeza que ele está correto e que está verificado?",
   "A password reset link has been sent to your email.": "Um link de redefinição de senha foi enviado para seu e-mail.",
   "Password changed successfully.": "Senha alterada com sucesso.",
-  "Invalid data, are you sure it is correct and verified?": "Dados inválidos, tem certeza que eles são corretos e verificados?"
+  "Invalid data, are you sure it is correct and verified?": "Dados inválidos, tem certeza que eles são corretos e verificados?",
+  "Available": "Disponível",
+  "Unavailable": "Indisponível"
 }
