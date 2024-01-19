@@ -11,14 +11,14 @@ class BookService
     ) {
     }
 
-    public function getBooks(): array
+    public function getBooks(): ?object
     {
         return $this->bookRepository->getBooks();
     }
 
     public function getBookById(string $id): ?object
     {
-        if(!$id){
+        if (!$id) {
             return null;
         }
 

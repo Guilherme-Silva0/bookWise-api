@@ -12,9 +12,9 @@ class BookRepository implements BookRepositoryInterface
     ) {
     }
 
-    public function getBooks(): array
+    public function getBooks(): ?object
     {
-        return $this->model->all()->toArray();
+        return (object) $this->model->all();
     }
 
     public function getBookById(string $id): ?object
