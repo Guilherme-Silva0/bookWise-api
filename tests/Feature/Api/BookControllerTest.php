@@ -13,7 +13,7 @@ class BookControllerTest extends TestCase
 
     public function test_can_list_books(): void
     {
-        $books = Book::factory(3)->create();
+        Book::factory(3)->create();
 
         $response = $this->getJson('/api/books');
 
@@ -26,6 +26,7 @@ class BookControllerTest extends TestCase
                 '*' => [
                     'id',
                     'title',
+                    'author',
                     'description',
                     'price',
                     'condition',
@@ -38,8 +39,6 @@ class BookControllerTest extends TestCase
                     'added_date',
                     'image_path',
                     'availability',
-                    'created_at',
-                    'updated_at',
                 ]
             ]
         ]);
