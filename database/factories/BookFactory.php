@@ -19,6 +19,7 @@ class BookFactory extends Factory
         return [
             'title' => $this->faker->title(),
             'description' => $this->faker->text(),
+            'author' => $this->faker->name(),
             'price' => $this->faker->randomFloat(2, 0, 100),
             'condition' => $this->faker->randomElement(['new', 'used']),
             'genre' => $this->faker->word(),
