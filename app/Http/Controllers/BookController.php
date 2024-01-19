@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\BookResource;
 use App\Services\BookService;
 use Illuminate\Http\Response;
 
@@ -14,7 +15,9 @@ class BookController extends Controller
 
     public function index()
     {
-        return response()->json(['data' => $this->bookService->getBooks()], Response::HTTP_OK);
+        $books = $this->bookService->getBooks();
+
+        return (BookResource::collection($books))->response()->setStatusCode(Response::HTTP_OK);
     }
 
     public function show(string $id)
@@ -25,6 +28,6 @@ class BookController extends Controller
             return response()->json(['data' => []], Response::HTTP_NOT_FOUND);
         }
 
-        return response()->json(['data' => $book], Response::HTTP_OK);
+        return (new BookResource($book))->response()->setStatusCode(Response::HTTP_OK);
     }
 }
