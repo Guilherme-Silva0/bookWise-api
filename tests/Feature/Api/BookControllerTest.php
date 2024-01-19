@@ -3,8 +3,8 @@
 namespace Tests\Feature\Api;
 
 use App\Models\Book;
+use Carbon\Carbon;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
 
 class BookControllerTest extends TestCase
@@ -39,8 +39,8 @@ class BookControllerTest extends TestCase
                     'added_date',
                     'image_path',
                     'availability',
-                ]
-            ]
+                ],
+            ],
         ]);
     }
 
@@ -56,6 +56,7 @@ class BookControllerTest extends TestCase
             'data' => [
                 'id',
                 'title',
+                'author',
                 'description',
                 'price',
                 'condition',
@@ -68,17 +69,16 @@ class BookControllerTest extends TestCase
                 'added_date',
                 'image_path',
                 'availability',
-                'created_at',
-                'updated_at',
-            ]
+            ],
         ]);
 
         $response->assertJson([
             'data' => [
                 'id' => $book->id,
                 'title' => $book->title,
+                'author' => $book->author,
                 'description' => $book->description,
-                'price' => $book->price,
+                'price' => 'R$ ' . number_format($book->price, 2, ',', '.'),
                 'condition' => $book->condition,
                 'genre' => $book->genre,
                 'isbn' => $book->isbn,
@@ -86,12 +86,10 @@ class BookControllerTest extends TestCase
                 'language' => $book->language,
                 'page_count' => $book->page_count,
                 'publisher' => $book->publisher,
-                'added_date' => $book->added_date,
+                'added_date' => Carbon::parse($book->added_date)->format('Y-m-d H:i:s'),
                 'image_path' => $book->image_path,
                 'availability' => $book->availability,
-                'created_at' => $book->created_at->toJSON(),
-                'updated_at' => $book->updated_at->toJSON(),
-            ]
+            ],
         ]);
     }
 }
