@@ -48,7 +48,7 @@ class BookControllerTest extends TestCase
     {
         $book = Book::factory()->create();
 
-        $response = $this->getJson("/api/books/{$book->id}");
+        $response = $this->getJson("/api/books/{$book->id}?lang=pt_BR");
 
         $response->assertStatus(200);
 
@@ -88,7 +88,7 @@ class BookControllerTest extends TestCase
                 'publisher' => $book->publisher,
                 'added_date' => Carbon::parse($book->added_date)->format('Y-m-d H:i:s'),
                 'image_path' => $book->image_path,
-                'availability' => $book->availability,
+                'availability' => $book->availability ? 'Disponível' : 'Indisponível',
             ],
         ]);
     }
