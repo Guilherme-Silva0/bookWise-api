@@ -29,7 +29,7 @@ class BookResource extends JsonResource
             'publisher' => $this->publisher,
             'added_date' => Carbon::parse($this->added_date)->format('Y-m-d H:i:s'),
             'image_path' => $this->image_path,
-            'availability' => $this->availability === 1 ? true : false,
+            'availability' => $this->availability ? __('Available') : __('Unavailable'),
             'isbn' => $this->isbn,
             // 'created_at' => $this->created_at
             // 'updated_at' => $this->updated_at
