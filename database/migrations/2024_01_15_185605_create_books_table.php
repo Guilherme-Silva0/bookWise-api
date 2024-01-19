@@ -13,17 +13,18 @@ return new class extends Migration {
         Schema::create('books', function (Blueprint $table) {
             $table->uuid('id')->primary();
             $table->string('title');
-            $table->text('description')->nullable();
-            $table->decimal('price', 8, 2)->nullable();
-            $table->enum('condition', ['new', 'used'])->default('new');
-            $table->string('genre')->nullable();
+            $table->string('author');
+            $table->text('description');
+            $table->decimal('price', 8, 2);
+            $table->string('genre');
+            $table->year('publication_year');
+            $table->string('language');
+            $table->date('added_date');
+            $table->string('image_path');
+            $table->integer('page_count');
+            $table->enum('condition', ['new', 'used'])->default('new')->nullable();
             $table->string('isbn')->nullable();
-            $table->year('publication_year')->nullable();
-            $table->string('language')->nullable();
-            $table->integer('page_count')->nullable();
             $table->string('publisher')->nullable();
-            $table->date('added_date')->nullable();
-            $table->string('image_path')->nullable();
             $table->boolean('availability')->default(true);
             $table->timestamps();
         });
