@@ -92,4 +92,33 @@ class BookControllerTest extends TestCase
             ],
         ]);
     }
+
+    public function test_can_show_book_invalid_id(): void
+    {
+        $book = Book::factory()->create();
+
+        $response = $this->getJson('/api/books/999999');
+
+        $response->assertStatus(404);
+
+        $response->assertJsonMissing([
+            'data' => [
+                'id',
+                'title',
+                'author',
+                'description',
+                'price',
+                'condition',
+                'genre',
+                'isbn',
+                'publication_year',
+                'language',
+                'page_count',
+                'publisher',
+                'added_date',
+                'image_path',
+                'availability',
+            ],
+        ]);
+    }
 }
