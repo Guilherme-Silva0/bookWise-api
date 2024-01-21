@@ -44,6 +44,15 @@ class BookControllerTest extends TestCase
         ]);
     }
 
+    public function test_can_list_books_empty(): void
+    {
+        $response = $this->getJson('/api/books');
+
+        $response->assertStatus(200);
+
+        $response->assertJsonCount(0, 'data');
+    }
+
     public function test_can_show_book(): void
     {
         $book = Book::factory()->create();
