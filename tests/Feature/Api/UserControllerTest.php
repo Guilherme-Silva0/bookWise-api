@@ -26,7 +26,7 @@ class UserControllerTest extends TestCase
             'password' => 'password',
             'password_confirmation' => 'password',
         ]);
-        
+
         $response->assertStatus(201);
         $response->assertJsonStructure(['token']);
         $response->assertJson(fn (AssertableJson $json) => $json->whereType('token', 'string')->etc());
@@ -50,6 +50,7 @@ class UserControllerTest extends TestCase
 
         Queue::assertPushed(SendEmailVerification::class, function ($job) use ($userData) {
             $user = User::where('email', $userData['email'])->first();
+
             return $job->user->id === $user->id;
         });
     }
@@ -142,7 +143,6 @@ class UserControllerTest extends TestCase
         $response->assertJson(fn (AssertableJson $json) => $json->where('message', 'Unauthenticated.')->etc());
 
         $this->assertFalse($user->hasVerifiedEmail());
-
     }
 
     public function test_validate_user_registration_empty_fields(): void
@@ -179,7 +179,7 @@ class UserControllerTest extends TestCase
             'password' => 'p',
             'password_confirmation' => 'j',
         ]);
-    
+
         $response->assertStatus(422);
 
         $response->assertJson(function (AssertableJson $json) {
@@ -201,15 +201,30 @@ class UserControllerTest extends TestCase
         $user = User::factory()->create();
 
         $response = $this->getJson('/api/user?lang=pt_BR', [
-            'Authorization' => 'Bearer ' . $user->createToken('authToken')->plainTextToken
+            'Authorization' => 'Bearer ' . $user->createToken('authToken')->plainTextToken,
         ]);
 
         $response->assertStatus(200);
-        $response->assertJson(function (AssertableJson $json) use ($user) {
-            $json->hasAll(['id', 'first_name', 'last_name', 'email', 'profile_image', 'profile_info', 'email_verified_at', 'user_type', 'status', 'created_at', 'updated_at']);
 
-            $json->whereAll([
+        $response->assertJsonStructure([
+            'data' => [
+                'id',
+                'name',
+                'first_name',
+                'last_name',
+                'email',
+                'profile_image',
+                'profile_info',
+                'email_verified_at',
+                'user_type',
+                'status',
+            ],
+        ]);
+
+        $response->assertJson([
+            'data' => [
                 'id' => $user->id,
+                'name' => "{$user->first_name} {$user->last_name}",
                 'first_name' => $user->first_name,
                 'last_name' => $user->last_name,
                 'email' => $user->email,
@@ -218,8 +233,8 @@ class UserControllerTest extends TestCase
                 'email_verified_at' => $user->email_verified_at,
                 'user_type' => 'normal',
                 'status' => 'active',
-            ]);
-        });
+            ],
+        ]);
     }
 
     public function test_get_me_endpoint_no_token(): void
@@ -229,14 +244,14 @@ class UserControllerTest extends TestCase
         $response->assertStatus(401);
 
         $response->assertJson(fn (AssertableJson $json) => $json->where('message', 'Unauthenticated.')->etc());
-    
+
         $response->assertJsonMissing(['id', 'first_name', 'last_name', 'email', 'profile_image', 'profile_info', 'email_verified_at', 'user_type', 'status', 'created_at', 'updated_at']);
     }
 
     public function test_get_me_endpoint_invalid_token(): void
     {
         $response = $this->getJson('/api/user?lang=pt_BR', [
-            'Authorization' => 'Bearer invalid-token'
+            'Authorization' => 'Bearer invalid-token',
         ]);
 
         $response->assertStatus(401);
@@ -244,7 +259,6 @@ class UserControllerTest extends TestCase
         $response->assertJson(fn (AssertableJson $json) => $json->where('message', 'Unauthenticated.')->etc());
 
         $response->assertJsonMissing(['id', 'first_name', 'last_name', 'email', 'profile_image', 'profile_info', 'email_verified_at', 'user_type', 'status', 'created_at', 'updated_at']);
-
     }
 
     public function test_login_user_endpoint(): void
@@ -273,18 +287,17 @@ class UserControllerTest extends TestCase
         $response->assertStatus(401);
 
         $response->assertJson(fn (AssertableJson $json) => $json->where('message', 'Credenciais inválidas.'));
-        
+
         $response->assertJsonMissing(['id', 'first_name', 'last_name', 'email', 'profile_image', 'profile_info', 'email_verified_at', 'user_type', 'status', 'created_at', 'updated_at']);
     }
 
     public function test_logout_user_endpoint(): void
     {
-
         $user = User::factory()->create();
         $token = $user->createToken('authToken')->plainTextToken;
 
         $response = $this->postJson('/api/user/logout?lang=pt_BR', [], [
-            'Authorization' => 'Bearer ' . $token
+            'Authorization' => 'Bearer ' . $token,
         ]);
 
         $response->assertStatus(204);
@@ -293,7 +306,7 @@ class UserControllerTest extends TestCase
     public function test_logout_user_endpoint_invalid_token(): void
     {
         $response = $this->postJson('/api/user/logout?lang=pt_BR', [], [
-            'Authorization' => 'Bearer invalid-token'
+            'Authorization' => 'Bearer invalid-token',
         ]);
 
         $response->assertStatus(401);
@@ -367,7 +380,7 @@ class UserControllerTest extends TestCase
         $updatedLastName = 'UpdatedLastName';
         $updatedEmail = 'updated@example.com';
 
-        $response = $this->putJson("/api/user/0?lang=pt_BR", [
+        $response = $this->putJson('/api/user/0?lang=pt_BR', [
             'first_name' => $updatedFirstName,
             'last_name' => $updatedLastName,
             'email' => $updatedEmail,
@@ -434,6 +447,7 @@ class UserControllerTest extends TestCase
 
         Queue::assertPushed(SendEmailRestorePassword::class, function ($job) use ($userData) {
             $user = User::where('email', $userData['email'])->first();
+
             return $job->user->id === $user->id;
         });
     }
@@ -492,7 +506,7 @@ class UserControllerTest extends TestCase
 
         $this->assertFalse(Hash::check('newPassword', $user->password));
 
-        $response = $this->postJson('/api/user/'.$user->id.'/reset_password?lang=pt_BR', [
+        $response = $this->postJson('/api/user/' . $user->id . '/reset_password?lang=pt_BR', [
             'token' => hash_hmac('sha256', $user->email, env('SECRET_KEY')),
             'password' => 'newPassword',
             'password_confirmation' => 'newPassword',
@@ -505,7 +519,6 @@ class UserControllerTest extends TestCase
         $response->assertJson(fn (AssertableJson $json) => $json->where('message', 'Senha alterada com sucesso.')->etc());
 
         $this->assertTrue(Hash::check('newPassword', $user->password));
-
     }
 
     public function test_recover_password_endpoint_invalid_token(): void
@@ -516,7 +529,7 @@ class UserControllerTest extends TestCase
 
         $this->assertFalse(Hash::check('newPassword', $user->password));
 
-        $response = $this->postJson('/api/user/'.$user->id.'/reset_password?lang=pt_BR', [
+        $response = $this->postJson('/api/user/' . $user->id . '/reset_password?lang=pt_BR', [
             'token' => 'invalidToken',
             'password' => 'newPassword',
             'password_confirmation' => 'newPassword',
@@ -539,7 +552,7 @@ class UserControllerTest extends TestCase
 
         $this->assertFalse(Hash::check('newPassword', $user->password));
 
-        $response = $this->postJson('/api/user/'.$user->id.'/reset_password?lang=pt_BR', []);
+        $response = $this->postJson('/api/user/' . $user->id . '/reset_password?lang=pt_BR', []);
 
         $user->refresh();
 
@@ -562,7 +575,7 @@ class UserControllerTest extends TestCase
 
         $this->assertFalse(Hash::check('tt', $user->password));
 
-        $response = $this->postJson('/api/user/'.$user->id.'/reset_password?lang=pt_BR', [
+        $response = $this->postJson('/api/user/' . $user->id . '/reset_password?lang=pt_BR', [
             'token' => '',
             'password' => 'tt',
             'password_confirmation' => 'ee',
@@ -613,7 +626,7 @@ class UserControllerTest extends TestCase
 
         $this->assertFalse($user->hasVerifiedEmail());
 
-        $response = $this->postJson('/api/user/'.$user->id.'/reset_password?lang=pt_BR', [
+        $response = $this->postJson('/api/user/' . $user->id . '/reset_password?lang=pt_BR', [
             'token' => hash_hmac('sha256', $user->email, env('SECRET_KEY')),
             'password' => 'newPassword',
             'password_confirmation' => 'newPassword',
@@ -636,8 +649,8 @@ class UserControllerTest extends TestCase
 
         $token = $user1->createToken('authToken')->plainTextToken;
 
-        $response = $this->getJson('/api/user/'.$user2->id.'?lang=pt_BR', [
-            'Authorization' => 'Bearer ' . $token
+        $response = $this->getJson('/api/user/' . $user2->id . '?lang=pt_BR', [
+            'Authorization' => 'Bearer ' . $token,
         ]);
 
         $response->assertStatus(200);
@@ -663,8 +676,8 @@ class UserControllerTest extends TestCase
     {
         $user = User::factory()->create();
 
-        $response = $this->getJson('/api/user/'.$user->id.'?lang=pt_BR', [
-            'Authorization' => 'Bearer invalid-token'
+        $response = $this->getJson('/api/user/' . $user->id . '?lang=pt_BR', [
+            'Authorization' => 'Bearer invalid-token',
         ]);
 
         $response->assertStatus(401);
@@ -679,7 +692,7 @@ class UserControllerTest extends TestCase
         $user = User::factory()->create();
 
         $response = $this->getJson('/api/user/999?lang=pt_BR', [
-            'Authorization' => 'Bearer ' . $user->createToken('authToken')->plainTextToken
+            'Authorization' => 'Bearer ' . $user->createToken('authToken')->plainTextToken,
         ]);
 
         $response->assertStatus(404);
