@@ -10,7 +10,7 @@ use App\Http\Requests\Api\ForgotPasswordRequest;
 use App\Http\Requests\Api\ResetPasswordRequest;
 use App\Http\Requests\Api\UserRegisterRequest;
 use App\Http\Requests\Api\UserUpdateRequest;
-use App\Models\User;
+use App\Http\Resources\UserResource;
 use App\Services\UserService;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -54,8 +54,7 @@ class UserController extends Controller
             return response()->json(null, Response::HTTP_NOT_FOUND);
         }
 
-        return response()->json($user, Response::HTTP_OK);
-        
+        return (new UserResource($user))->response()->setStatusCode(Response::HTTP_OK);
     }
 
     public function login(Request $request)
@@ -73,7 +72,7 @@ class UserController extends Controller
 
     public function logout(Request $request)
     {
-        if($this->userService->logout($request)) {
+        if ($this->userService->logout($request)) {
             return response()->json(null, Response::HTTP_NO_CONTENT);
         }
 
@@ -88,12 +87,12 @@ class UserController extends Controller
             return response()->json(null, Response::HTTP_NOT_FOUND);
         }
 
-        return response()->json($user, Response::HTTP_OK);
+        return (new UserResource($user))->response()->setStatusCode(Response::HTTP_OK);
     }
 
     public function forgotPassword(ForgotPasswordRequest $request)
     {
-        if($this->userService->forgotPassword($request->get('email'))) {
+        if ($this->userService->forgotPassword($request->get('email'))) {
             return response()->json(['message' => __('A password reset link has been sent to your email.')], Response::HTTP_OK);
         }
 
@@ -102,7 +101,7 @@ class UserController extends Controller
 
     public function resetPassword(ResetPasswordRequest $request, string $id)
     {
-        if($this->userService->resetPassword($request->get('password'), $request->get('token'), $id)) {
+        if ($this->userService->resetPassword($request->get('password'), $request->get('token'), $id)) {
             return response()->json(['message' => __('Password changed successfully.')], Response::HTTP_OK);
         }
 
@@ -121,6 +120,6 @@ class UserController extends Controller
             return response()->json(null, Response::HTTP_NOT_FOUND);
         }
 
-        return response()->json($user, Response::HTTP_OK);
+        return (new UserResource($user))->response()->setStatusCode(Response::HTTP_OK);
     }
 }
