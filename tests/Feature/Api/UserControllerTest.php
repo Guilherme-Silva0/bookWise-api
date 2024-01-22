@@ -334,11 +334,25 @@ class UserControllerTest extends TestCase
 
         $response->assertStatus(200);
 
-        $response->assertJson(function (AssertableJson $json) use ($updatedFirstName, $updatedLastName, $updatedEmail, $user) {
-            $json->hasAll(['id', 'first_name', 'last_name', 'email', 'profile_image', 'profile_info', 'email_verified_at', 'user_type', 'status', 'created_at', 'updated_at']);
+        $response->assertJsonStructure([
+            'data' => [
+                'id',
+                'name',
+                'first_name',
+                'last_name',
+                'email',
+                'profile_image',
+                'profile_info',
+                'email_verified_at',
+                'user_type',
+                'status',
+            ],
+        ]);
 
-            $json->whereAll([
+        $response->assertJson([
+            'data' => [
                 'id' => $user->id,
+                'name' => "{$updatedFirstName} {$updatedLastName}",
                 'first_name' => $updatedFirstName,
                 'last_name' => $updatedLastName,
                 'email' => $updatedEmail,
@@ -347,8 +361,8 @@ class UserControllerTest extends TestCase
                 'email_verified_at' => $user->email_verified_at,
                 'user_type' => 'normal',
                 'status' => 'active',
-            ]);
-        });
+            ],
+        ]);
     }
 
     public function test_update_user_endpoint_invalid_token(): void
