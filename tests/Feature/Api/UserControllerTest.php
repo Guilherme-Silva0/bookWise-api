@@ -669,21 +669,35 @@ class UserControllerTest extends TestCase
 
         $response->assertStatus(200);
 
-        $response->assertJson(function (AssertableJson $json) use ($user2) {
-            $json->whereAll([
+        $response->assertJsonStructure([
+            'data' => [
+                'id',
+                'name',
+                'first_name',
+                'last_name',
+                'email',
+                'profile_image',
+                'profile_info',
+                'email_verified_at',
+                'user_type',
+                'status',
+            ],
+        ]);
+
+        $response->assertJson([
+            'data' => [
                 'id' => $user2->id,
+                'name' => "{$user2->first_name} {$user2->last_name}",
                 'first_name' => $user2->first_name,
                 'last_name' => $user2->last_name,
                 'email' => $user2->email,
-                'profile_image' => null,
-                'profile_info' => null,
-                'email_verified_at' => null,
+                'profile_image' => $user2->profile_image,
+                'profile_info' => $user2->profile_info,
+                'email_verified_at' => $user2->email_verified_at,
                 'user_type' => 'normal',
                 'status' => 'active',
-                'created_at' => $user2->created_at->toJSON(),
-                'updated_at' => $user2->updated_at->toJSON(),
-            ]);
-        });
+            ],
+        ]);
     }
 
     public function test_get_user_endpoint_invalid_token(): void
