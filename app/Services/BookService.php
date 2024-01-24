@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\DTOs\Book\CreateBookDTO;
 use App\Repositories\Contracts\BookRepositoryInterface;
 
 class BookService
@@ -23,5 +24,10 @@ class BookService
         }
 
         return $this->bookRepository->getBookById($id);
+    }
+
+    public function create(CreateBookDTO $createBookDTO): ?object
+    {
+        return $this->bookRepository->createBook($createBookDTO);
     }
 }
