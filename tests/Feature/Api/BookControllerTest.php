@@ -3,6 +3,7 @@
 namespace Tests\Feature\Api;
 
 use App\Models\Book;
+use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -127,6 +128,38 @@ class BookControllerTest extends TestCase
                 'added_date',
                 'image_path',
                 'availability',
+            ],
+        ]);
+    }
+
+    public function test_can_create_book(): void
+    {
+        $book = Book::factory()->makeOne();
+
+        $token = User::factory()->create()->createToken('authToken')->plainTextToken;
+
+        $response = $this->postJson('/api/books?lang=pt_BR', $book->toArray(), [
+            'Authorization' => 'Bearer ' . $token,
+        ]);
+
+        $response->assertStatus(201);
+
+        $response->assertJson([
+            'data' => [
+                'title' => $book->title,
+                'author' => $book->author,
+                'description' => $book->description,
+                'price' => 'R$ ' . number_format($book->price, 2, ',', '.'),
+                'condition' => $book->condition,
+                'genre' => $book->genre,
+                'isbn' => $book->isbn,
+                'publication_year' => (float) $book->publication_year,
+                'language' => $book->language,
+                'page_count' => $book->page_count,
+                'publisher' => $book->publisher,
+                'added_date' => Carbon::parse($book->added_date)->format('Y-m-d H:i:s'),
+                'image_path' => $book->image_path,
+                'availability' => $book->availability ? 'Disponível' : 'Indisponível',
             ],
         ]);
     }
