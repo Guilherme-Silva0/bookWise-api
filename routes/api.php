@@ -2,7 +2,6 @@
 
 use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\BookController;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 Route::post('user/register', [UserController::class, 'store'])->name('user.store');
@@ -19,4 +18,6 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('user/logout', [UserController::class, 'logout'])->name('user.logout');
     Route::put('user/confirm_email', [UserController::class, 'confirmEmail'])->name('user.confirm_email');
     Route::put('/user/{id}', [UserController::class, 'update'])->name('user.update');
+
+    Route::post('/books', [BookController::class, 'store'])->name('book.store');
 });
