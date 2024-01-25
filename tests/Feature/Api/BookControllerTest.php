@@ -170,4 +170,48 @@ class BookControllerTest extends TestCase
             'message' => 'Unauthenticated.',
         ]);
     }
+
+    public function test_can_create_book_empty_data(): void
+    {
+        $token = User::factory()->create()->createToken('authToken')->plainTextToken;
+
+        $response = $this->postJson('/api/books?lang=pt_BR', [], [
+            'Authorization' => 'Bearer ' . $token,
+        ]);
+
+        $response->assertStatus(422);
+
+        $response->assertJson([
+            'message' => 'O campo título é obrigatório. (e mais 8 erros)',
+            'errors' => [
+                'title' => [
+                    0 => 'O campo título é obrigatório.',
+                ],
+                'description' => [
+                    0 => 'O campo descrição é obrigatório.',
+                ],
+                'author' => [
+                    0 => 'O campo author é obrigatório.',
+                ],
+                'price' => [
+                    0 => 'O campo price é obrigatório.',
+                ],
+                'genre' => [
+                    0 => 'O campo genre é obrigatório.',
+                ],
+                'publication_year' => [
+                    0 => 'O campo publication year é obrigatório.',
+                ],
+                'language' => [
+                    0 => 'O campo language é obrigatório.',
+                ],
+                'page_count' => [
+                    0 => 'O campo page count é obrigatório.',
+                ],
+                'image_path' => [
+                    0 => 'O campo image path é obrigatório.',
+                ],
+            ],
+        ]);
+    }
 }
