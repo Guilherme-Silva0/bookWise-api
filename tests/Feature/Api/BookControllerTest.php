@@ -5,6 +5,7 @@ namespace Tests\Feature\Api;
 use App\Models\Book;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Testing\Fluent\AssertableJson;
 use Tests\TestCase;
 
 class BookControllerTest extends TestCase
@@ -213,5 +214,49 @@ class BookControllerTest extends TestCase
                 ],
             ],
         ]);
+    }
+
+    public function test_can_create_book_invalid_data(): void
+    {
+        $token = User::factory()->create()->createToken('authToken')->plainTextToken;
+
+        $response = $this->postJson('/api/books?lang=pt_BR', [
+            'title' => 'se',
+            'description' => 'sesese',
+            'author' => 'se',
+            'price' => 'se',
+            'condition' => 'se',
+            'genre' => 'se',
+            'isbn' => 887699868,
+            'publication_year' => ((int) date('Y')) + 1,
+            'language' => str_repeat('x', 256),
+            'page_count' => 'se',
+            'publisher' => 'se',
+            'image_path' => 'se',
+            'availability' => 'se',
+        ], [
+            'Authorization' => 'Bearer ' . $token,
+        ]);
+
+        $response->assertStatus(422);
+
+        $response->assertJson(function (AssertableJson $json) {
+            $json->whereAll([
+                'message' => 'O campo título deve ter pelo menos 3 caracteres. (e mais 12 erros)',
+                'errors.title.0' => 'O campo título deve ter pelo menos 3 caracteres.',
+                'errors.description.0' => 'O campo descrição deve ter pelo menos 10 caracteres.',
+                'errors.author.0' => 'O campo author deve ter pelo menos 3 caracteres.',
+                'errors.price.0' => 'O campo price deve ser um número.',
+                'errors.condition.0' => 'O campo condition selecionado é inválido.',
+                'errors.genre.0' => 'O campo genre deve ter pelo menos 3 caracteres.',
+                'errors.isbn.0' => 'O campo isbn tem um formato inválido.',
+                'errors.publication_year.0' => 'O campo publication year não pode ser superior a 2024.',
+                'errors.language.0' => 'O campo language não pode ser superior a 255 caracteres.',
+                'errors.page_count.0' => 'O campo page count deve ser um número.',
+                'errors.publisher.0' => 'O campo publisher deve ter pelo menos 3 caracteres.',
+                'errors.image_path.0' => 'O campo image path deve ter pelo menos 3 caracteres.',
+                'errors.availability.0' => 'O campo availability deve ser verdadeiro ou falso.',
+            ]);
+        });
     }
 }
