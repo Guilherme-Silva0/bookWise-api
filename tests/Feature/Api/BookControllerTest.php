@@ -163,4 +163,17 @@ class BookControllerTest extends TestCase
             ],
         ]);
     }
+
+    public function test_can_create_book_invalid_token(): void
+    {
+        $book = Book::factory()->makeOne();
+
+        $response = $this->postJson('/api/books?lang=pt_BR', $book->toArray());
+
+        $response->assertStatus(401);
+
+        $response->assertJson([
+            'message' => 'Unauthenticated.',
+        ]);
+    }
 }
