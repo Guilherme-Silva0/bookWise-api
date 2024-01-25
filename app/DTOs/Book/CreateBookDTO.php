@@ -18,7 +18,6 @@ class CreateBookDTO
         public string $language,
         public int $page_count,
         public string $publisher,
-        public string $added_date,
         public string $image_path,
         public bool $availability
     ) {
@@ -38,7 +37,6 @@ class CreateBookDTO
             $request->get('language'),
             $request->get('page_count'),
             $request->get('publisher'),
-            $request->get('added_date'),
             $request->get('image_path'),
             $request->get('availability'),
         );

@@ -19,11 +19,10 @@ return new class extends Migration {
             $table->string('genre');
             $table->year('publication_year');
             $table->string('language');
-            $table->date('added_date');
             $table->string('image_path');
             $table->integer('page_count');
             $table->enum('condition', ['new', 'used'])->default('new')->nullable();
-            $table->string('isbn')->nullable();
+            $table->string('isbn')->unique()->nullable();
             $table->string('publisher')->nullable();
             $table->boolean('availability')->default(true);
             $table->timestamps();

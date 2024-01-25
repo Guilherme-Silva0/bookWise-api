@@ -2,7 +2,6 @@
 
 namespace App\Http\Resources;
 
-use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -27,7 +26,6 @@ class BookResource extends JsonResource
             'language' => $this->language,
             'page_count' => $this->page_count,
             'publisher' => $this->publisher,
-            'added_date' => Carbon::parse($this->added_date)->format('Y-m-d H:i:s'),
             'image_path' => $this->image_path,
             'availability' => $this->availability ? __('Available') : __('Unavailable'),
             'isbn' => $this->isbn,

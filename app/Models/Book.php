@@ -22,7 +22,6 @@ class Book extends Model
         'language',
         'page_count',
         'publisher',
-        'added_date',
         'image_path',
         'availability',
     ];
