@@ -4,7 +4,6 @@ namespace Tests\Feature\Api;
 
 use App\Models\Book;
 use App\Models\User;
-use Carbon\Carbon;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -37,7 +36,6 @@ class BookControllerTest extends TestCase
                     'language',
                     'page_count',
                     'publisher',
-                    'added_date',
                     'image_path',
                     'availability',
                 ],
@@ -76,7 +74,6 @@ class BookControllerTest extends TestCase
                 'language',
                 'page_count',
                 'publisher',
-                'added_date',
                 'image_path',
                 'availability',
             ],
@@ -96,7 +93,6 @@ class BookControllerTest extends TestCase
                 'language' => $book->language,
                 'page_count' => $book->page_count,
                 'publisher' => $book->publisher,
-                'added_date' => Carbon::parse($book->added_date)->format('Y-m-d H:i:s'),
                 'image_path' => $book->image_path,
                 'availability' => $book->availability ? 'Disponível' : 'Indisponível',
             ],
@@ -125,7 +121,6 @@ class BookControllerTest extends TestCase
                 'language',
                 'page_count',
                 'publisher',
-                'added_date',
                 'image_path',
                 'availability',
             ],
@@ -157,7 +152,6 @@ class BookControllerTest extends TestCase
                 'language' => $book->language,
                 'page_count' => $book->page_count,
                 'publisher' => $book->publisher,
-                'added_date' => Carbon::parse($book->added_date)->format('Y-m-d H:i:s'),
                 'image_path' => $book->image_path,
                 'availability' => $book->availability ? 'Disponível' : 'Indisponível',
             ],
