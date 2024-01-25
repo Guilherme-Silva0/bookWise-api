@@ -3,9 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\DTOs\Book\CreateBookDTO;
+use App\Http\Requests\Api\CreateBookRequest;
 use App\Http\Resources\BookResource;
 use App\Services\BookService;
-use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 
 class BookController extends Controller
@@ -33,7 +33,7 @@ class BookController extends Controller
         return (new BookResource($book))->response()->setStatusCode(Response::HTTP_OK);
     }
 
-    public function store(Request $request)
+    public function store(CreateBookRequest $request)
     {
         $book = $this->bookService->create(CreateBookDTO::makeFromRequest($request));
 
