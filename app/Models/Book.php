@@ -11,6 +11,7 @@ class Book extends Model
     use HasFactory, HasUuids;
 
     protected $fillable = [
+        'user_id',
         'title',
         'description',
         'author',
@@ -25,4 +26,9 @@ class Book extends Model
         'image_path',
         'availability',
     ];
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
 }
