@@ -69,6 +69,8 @@ class BookControllerTest extends TestCase
     {
         $book = Book::factory()->create();
 
+        $user = User::find($book->user_id);
+
         $response = $this->getJson("/api/books/{$book->id}?lang=pt_BR");
 
         $response->assertStatus(200);
@@ -120,6 +122,18 @@ class BookControllerTest extends TestCase
                 'publisher' => $book->publisher,
                 'image_path' => $book->image_path,
                 'availability' => $book->availability ? 'Disponível' : 'Indisponível',
+                'user' => [
+                    'id' => $user->id,
+                    'name' => "{$user->first_name} {$user->last_name}",
+                    'first_name' => $user->first_name,
+                    'last_name' => $user->last_name,
+                    'email' => $user->email,
+                    'profile_image' => $user->profile_image,
+                    'profile_info' => $user->profile_info,
+                    'email_verified_at' => $user->email_verified_at,
+                    'user_type' => 'normal',
+                    'status' => 'active',
+                ],
             ],
         ]);
     }
@@ -148,6 +162,7 @@ class BookControllerTest extends TestCase
                 'publisher',
                 'image_path',
                 'availability',
+                'user',
             ],
         ]);
     }
@@ -156,10 +171,10 @@ class BookControllerTest extends TestCase
     {
         $book = Book::factory()->makeOne();
 
-        $token = User::factory()->create()->createToken('authToken')->plainTextToken;
+        $user = User::factory()->create();
 
         $response = $this->postJson('/api/books?lang=pt_BR', $book->toArray(), [
-            'Authorization' => 'Bearer ' . $token,
+            'Authorization' => 'Bearer ' . $user->createToken('authToken')->plainTextToken,
         ]);
 
         $response->assertStatus(201);
@@ -173,12 +188,24 @@ class BookControllerTest extends TestCase
                 'condition' => $book->condition,
                 'genre' => $book->genre,
                 'isbn' => $book->isbn,
-                'publication_year' => (float) $book->publication_year,
+                'publication_year' => (int) $book->publication_year,
                 'language' => $book->language,
                 'page_count' => $book->page_count,
                 'publisher' => $book->publisher,
                 'image_path' => $book->image_path,
                 'availability' => $book->availability ? 'Disponível' : 'Indisponível',
+                'user' => [
+                    'id' => $user->id,
+                    'name' => "{$user->first_name} {$user->last_name}",
+                    'first_name' => $user->first_name,
+                    'last_name' => $user->last_name,
+                    'email' => $user->email,
+                    'profile_image' => $user->profile_image,
+                    'profile_info' => $user->profile_info,
+                    'email_verified_at' => $user->email_verified_at,
+                    'user_type' => 'normal',
+                    'status' => 'active',
+                ],
             ],
         ]);
     }
