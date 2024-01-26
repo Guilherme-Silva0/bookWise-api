@@ -39,6 +39,18 @@ class BookControllerTest extends TestCase
                     'publisher',
                     'image_path',
                     'availability',
+                    'user' => [
+                        'id',
+                        'name',
+                        'first_name',
+                        'last_name',
+                        'email',
+                        'profile_image',
+                        'profile_info',
+                        'email_verified_at',
+                        'user_type',
+                        'status',
+                    ],
                 ],
             ],
         ]);
