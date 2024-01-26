@@ -15,7 +15,7 @@ class BookRepository implements BookRepositoryInterface
 
     public function getBooks(): ?object
     {
-        return (object) $this->model->all();
+        return (object) $this->model->with('user')->get();
     }
 
     public function getBookById(string $id): ?object
