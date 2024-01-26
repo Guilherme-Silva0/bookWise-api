@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 class CreateBookDTO
 {
     public function __construct(
+        public string $user_id,
         public string $title,
         public string $author,
         public string $description,
@@ -26,6 +27,7 @@ class CreateBookDTO
     public static function makeFromRequest(Request $request): self
     {
         return new self(
+            $request->user()->id,
             $request->get('title'),
             $request->get('author'),
             $request->get('description'),
