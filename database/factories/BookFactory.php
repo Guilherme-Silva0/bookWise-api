@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -21,6 +22,7 @@ class BookFactory extends Factory
         $isbnWithDashes = substr($isbn, 0, 3) . '-' . substr($isbn, 3, 1) . '-' . substr($isbn, 4, 4) . '-' . substr($isbn, 8, 4) . '-' . substr($isbn, 12);
 
         return [
+            'user_id' => User::factory()->create()->id,
             'title' => $this->faker->sentence(3),
             'description' => $this->faker->paragraph(),
             'author' => $this->faker->name(),
