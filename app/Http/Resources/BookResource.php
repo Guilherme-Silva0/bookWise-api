@@ -29,6 +29,7 @@ class BookResource extends JsonResource
             'image_path' => $this->image_path,
             'availability' => $this->availability ? __('Available') : __('Unavailable'),
             'isbn' => $this->isbn,
+            'user' => new UserResource($this->user),
             // 'created_at' => $this->created_at
             // 'updated_at' => $this->updated_at
         ];
