@@ -22,13 +22,12 @@ class UserUpdateRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'first_name' => ['sometimes','string','min:2' ,'max:255'],
-            'last_name' => ['sometimes','string','min:2' , 'max:255'],
-            'email' => ['sometimes','string', 'email', 'max:255', 'unique:users,email'],
-            'profile_image' => ['sometimes','string', 'max:255'],
-            'profile_info' => ['sometimes','string', 'min:2' ,'max:255'],
-            'status' => ['sometimes','string', 'in:active,inactive,banned'],
-            'user_type' => ['sometimes','string', 'in:normal,writer'],
+            'first_name' => ['sometimes', 'string', 'min:2', 'max:255'],
+            'last_name' => ['sometimes', 'string', 'min:2', 'max:255'],
+            'profile_image' => ['sometimes', 'string', 'max:255'],
+            'profile_info' => ['sometimes', 'string', 'min:2', 'max:255'],
+            'status' => ['sometimes', 'string', 'in:active,inactive,banned'],
+            'user_type' => ['sometimes', 'string', 'in:normal,writer'],
         ];
     }
 }
