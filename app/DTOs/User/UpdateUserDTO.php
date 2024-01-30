@@ -9,7 +9,6 @@ class UpdateUserDTO
     public function __construct(
         public ?string $first_name,
         public ?string $last_name,
-        public ?string $email,
         public ?string $profile_image,
         public ?string $profile_info,
         public ?string $status,
@@ -22,11 +21,10 @@ class UpdateUserDTO
         return [
             'first_name' => $this->first_name,
             'last_name' => $this->last_name,
-            'email' => $this->email,
             'profile_image' => $this->profile_image,
             'profile_info' => $this->profile_info,
             'status' => $this->status,
-            'user_type' => $this->user_type
+            'user_type' => $this->user_type,
         ];
     }
 
@@ -35,7 +33,6 @@ class UpdateUserDTO
         return new self(
             $request->get('first_name'),
             $request->get('last_name'),
-            $request->get('email'),
             $request->get('profile_image'),
             $request->get('profile_info'),
             $request->get('status'),
