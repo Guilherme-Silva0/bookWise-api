@@ -322,12 +322,10 @@ class UserControllerTest extends TestCase
 
         $updatedFirstName = 'UpdatedFirstName';
         $updatedLastName = 'UpdatedLastName';
-        $updatedEmail = 'updated@example.com';
 
         $response = $this->putJson("/api/user/{$user->id}", [
             'first_name' => $updatedFirstName,
             'last_name' => $updatedLastName,
-            'email' => $updatedEmail,
         ], [
             'Authorization' => 'Bearer ' . $token,
         ]);
@@ -355,7 +353,7 @@ class UserControllerTest extends TestCase
                 'name' => "{$updatedFirstName} {$updatedLastName}",
                 'first_name' => $updatedFirstName,
                 'last_name' => $updatedLastName,
-                'email' => $updatedEmail,
+                'email' => $user->email,
                 'profile_image' => $user->profile_image,
                 'profile_info' => $user->profile_info,
                 'email_verified_at' => $user->email_verified_at,
@@ -371,12 +369,10 @@ class UserControllerTest extends TestCase
 
         $updatedFirstName = 'UpdatedFirstName';
         $updatedLastName = 'UpdatedLastName';
-        $updatedEmail = 'updated@example.com';
 
         $response = $this->putJson("/api/user/{$user->id}", [
             'first_name' => $updatedFirstName,
             'last_name' => $updatedLastName,
-            'email' => $updatedEmail,
         ], [
             'Authorization' => 'Bearer invalid-token',
         ]);
@@ -392,12 +388,10 @@ class UserControllerTest extends TestCase
 
         $updatedFirstName = 'UpdatedFirstName';
         $updatedLastName = 'UpdatedLastName';
-        $updatedEmail = 'updated@example.com';
 
         $response = $this->putJson('/api/user/0?lang=pt_BR', [
             'first_name' => $updatedFirstName,
             'last_name' => $updatedLastName,
-            'email' => $updatedEmail,
         ], [
             'Authorization' => 'Bearer ' . $user->createToken('authToken')->plainTextToken,
         ]);
@@ -414,7 +408,6 @@ class UserControllerTest extends TestCase
         $response = $this->putJson("/api/user/{$user->id}?lang=pt_BR", [
             'first_name' => '',
             'last_name' => '',
-            'email' => '',
             'profile_image' => 5,
             'profile_info' => '',
             'status' => 'invalid-status',
@@ -427,13 +420,11 @@ class UserControllerTest extends TestCase
 
         $response->assertJson(function (AssertableJson $json) {
             $json->whereAll([
-                'message' => 'O campo primeiro nome deve ser uma string. (e mais 10 erros)',
+                'message' => 'O campo primeiro nome deve ser uma string. (e mais 8 erros)',
                 'errors.first_name.0' => 'O campo primeiro nome deve ser uma string.',
                 'errors.first_name.1' => 'O campo primeiro nome deve ter pelo menos 2 caracteres.',
                 'errors.last_name.0' => 'O campo sobrenome deve ser uma string.',
                 'errors.last_name.1' => 'O campo sobrenome deve ter pelo menos 2 caracteres.',
-                'errors.email.0' => 'O campo email deve ser uma string.',
-                'errors.email.1' => 'O campo email deve ser um endereço de e-mail válido.',
                 'errors.profile_image.0' => 'O campo profile image deve ser uma string.',
                 'errors.profile_info.0' => 'O campo profile info deve ser uma string.',
                 'errors.profile_info.1' => 'O campo profile info deve ter pelo menos 2 caracteres.',
